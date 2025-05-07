@@ -6,29 +6,27 @@ WORKDIR /app
 
 # Copiar archivos necesarios
 COPY package*.json ./
-COPY tsconfig.* ./
 COPY angular.json ./
+COPY tsconfig*.json ./
 COPY . .
 
 # Instalar dependencias
 RUN npm install
 
-# Compilar la aplicación Angular con SSR
-RUN npm run build:ssr
+# Compilar la aplicación Angular (build clásica)
+RUN npm run build
 
-# Etapa 2: Imagen de producción
-FROM node:20-alpine
+# Etapa 2: Imagen de producción (usando nginx para servir archivos estáticos)
+FROM nginx:alpine
 
-# Crear directorio de trabajo
-WORKDIR /app
+# Copiar el build al directorio de nginx
+COPY --from=builder /app/dist/your-project-name /usr/share/nginx/html
 
-# Copiar desde la etapa de build
-COPY --from=builder /app/dist /app/dist
-COPY --from=builder /app/node_modules /app/node_modules
-COPY --from=builder /app/package.json /app/package.json
+# Copiar configuración personalizada de nginx (opcional)
+# COPY nginx.conf /etc/nginx/nginx.conf
 
-# Exponer el puerto en el que se ejecutará el servidor (ajusta si usas otro)
-EXPOSE 4000
+# Exponer el puerto por defecto de nginx
+EXPOSE 80
 
-# Comando de inicio para producción SSR
-CMD ["node", "dist/nph-dashboard/server/server.mjs"]
+# Comando por defecto de nginx
+CMD ["nginx", "-g", "daemon off;"]
