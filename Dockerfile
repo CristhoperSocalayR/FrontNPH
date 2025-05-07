@@ -1,32 +1,32 @@
-# Etapa 1: Compilación
+# Etapa 1: Construcción de la app
 FROM node:20-alpine AS builder
 
-# Crear directorio de trabajo
+# Establece el directorio de trabajo
 WORKDIR /app
 
-# Copiar archivos necesarios
-COPY package*.json ./
-COPY angular.json ./
-COPY tsconfig*.json ./
+# Copia los archivos necesarios
+COPY package.json package-lock.json ./
+RUN npm ci
+
 COPY . .
 
-# Instalar dependencias
-RUN npm install
+# Compila la aplicación Angular
+RUN npm run build --prod
 
-# Compilar la aplicación Angular (build clásica)
-RUN npm run build
-
-# Etapa 2: Imagen de producción (usando nginx para servir archivos estáticos)
+# Etapa 2: Imagen ligera de producción con nginx
 FROM nginx:alpine
 
-# Copiar el build al directorio de nginx
-COPY --from=builder /app/dist/your-project-name /usr/share/nginx/html
+# Elimina la configuración por defecto de nginx
+RUN rm -rf /usr/share/nginx/html/*
 
-# Copiar configuración personalizada de nginx (opcional)
+# Copia los archivos generados de la compilación al contenedor de nginx
+COPY --from=builder /app/dist/* /usr/share/nginx/html/
+
+# Copia una configuración personalizada de nginx (opcional)
 # COPY nginx.conf /etc/nginx/nginx.conf
 
-# Exponer el puerto por defecto de nginx
+# Expone el puerto 80
 EXPOSE 80
 
-# Comando por defecto de nginx
+# Comando por defecto
 CMD ["nginx", "-g", "daemon off;"]
