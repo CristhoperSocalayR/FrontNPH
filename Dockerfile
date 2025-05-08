@@ -1,4 +1,4 @@
-# Etapa 1: Construcción de la app
+# Etapa 1: Construcción de la apps
 FROM node:20-alpine AS builder
 
 # Establece el directorio de trabajo
