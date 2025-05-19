@@ -1,4 +1,4 @@
-name: Dockerize and Push to Docker Hub
+name: Dockerize and Push to Docker Hubs
 
 on:
   push:
