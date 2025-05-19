@@ -3,7 +3,7 @@ name: Dockerize and Push to Docker Hub
 on:
   push:
     branches:
-      - 'main' 
+      - 'develop'
 
 jobs:
   dockerize:
@@ -32,5 +32,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/nphdash:latest
-            ${{ secrets.DOCKER_USERNAME }}/nphdash:${{ env.TAG }}
+            ${{ secrets.DOCKER_USERNAME }}/pagapee:latest
+            ${{ secrets.DOCKER_USERNAME }}/pagapee:${{ env.TAG }}
